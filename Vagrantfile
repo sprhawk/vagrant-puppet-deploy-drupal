@@ -8,6 +8,7 @@ Vagrant::Config.run do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "debian"
+  config.vm.forward_port 80, 8080
 
   config.vm.provision :puppet , :module_path => "modules" , :options => "--verbose" do |puppet|
     puppet.manifests_path = "manifests"
