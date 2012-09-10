@@ -1,4 +1,5 @@
 class drupal::install {
+      require php5
       $drupal_tarball = 'drupal-7.15.tar.gz'
       file { "drupal-install":
            path => "/var/tmp/$drupal_tarball",
