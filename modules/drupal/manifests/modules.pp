@@ -12,6 +12,8 @@ define module($name) {
            require => File[$name],
            path => "/bin:/usr/bin",
            command => "/bin/sh -c 'cd /var/www/drupal/sites/all/modules; sudo tar xvf /var/tmp/$name; sudo chown -R www-data:www-data $title'",
+           refreshonly => true,
+           subscribe => File[$name],
       }
 }
 
