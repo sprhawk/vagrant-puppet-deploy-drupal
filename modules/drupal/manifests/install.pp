@@ -17,6 +17,7 @@ class drupal::install {
            owner => "vagrant",
            group => "vagrant",
       }
+
       exec { "extract": 
            require => [File['drupal-install'], File['drupal-install-sh']],
            path => "/bin:/usr/bin:/usr/sbin",

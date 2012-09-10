@@ -33,7 +33,10 @@ for i in $TMP_DIR/drupal*; do
     break
 done
 
+chown -R www-data:www-data $DRUPAL_DIR
+
 pear channel-discover pear.drush.org
 pear install drush/drush
 
 drush site-install --db-url=mysql://drupal:drupal@localhost/drupal --root=$DRUPAL_DIR --account-name=admin --account-pass=admin --account-mail="admin@nobody.me" --site-name="Nobody" --site-mail="admin@nobody.me" --yes
+
