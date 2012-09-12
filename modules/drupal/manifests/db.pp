@@ -1,4 +1,5 @@
 class drupal::db {
+     require mysql
       exec { "db":
            path => "/usr/bin",
            command => "mysql -uroot -e 'create database if not exists drupal'",

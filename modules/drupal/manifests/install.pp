@@ -1,14 +1,12 @@
 class drupal::install {
+      require apache2
+      require mysql
       require php5
-      $drupal_tarball = 'drupal-7.15.tar.gz'
-      file { "drupal-install":
-           path => "/var/tmp/$drupal_tarball",
-           source => "puppet:///modules/drupal/drupal/$drupal_tarball",
-           ensure => present,
-           mode => 0644,
-           owner => "vagrant",
-           group => "vagrant",
-      }
+      require drupal::extract
+      require drupal::db
+      require drupal::drupal_conf
+      require drupal::drush
+
       file { "drupal-install-sh":
            path => "/var/tmp/install.sh",
            source => "puppet:///modules/drupal/install.sh",
@@ -18,10 +16,10 @@ class drupal::install {
            group => "vagrant",
       }
 
-      exec { "extract": 
-           require => [File['drupal-install'], File['drupal-install-sh']],
+      exec { "install": 
+           require =>  File['drupal-install-sh'],
            path => "/bin:/usr/bin:/usr/sbin",
-           command => "sh /var/tmp/install.sh /var/tmp/$drupal_tarball",
+           command => "sudo sh /var/tmp/install.sh",
            refreshonly => true,
            subscribe => File["drupal-install-sh"],
       }

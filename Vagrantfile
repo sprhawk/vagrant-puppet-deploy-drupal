@@ -7,7 +7,7 @@ Vagrant::Config.run do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "debian"
+  config.vm.box = "debian-squeeze-6.0-i386"
   config.vm.forward_port 80, 8080
 
   config.vm.provision :puppet , :module_path => "modules" , :options => "--verbose" do |puppet|
