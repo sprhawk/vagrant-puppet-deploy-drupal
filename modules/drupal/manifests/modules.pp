@@ -29,9 +29,10 @@ class drupal::modules {
       module {"features": name=>"features-7.x-1.0.tar.gz"}
       module {"role_export": name=>"role_export-7.x-1.0.tar.gz"}
       module {"services": name=>"services-7.x-3.1.tar.gz"}
+      module {"oauth": name=>"oauth-7.x-3.0.tar.gz"}
       exec { "install additional lib for services":
         path => "/bin:/usr/bin",
-        command => "cd /var/www/drupal/sites/all/modules/services/servers/rest_server/lib; unzip -j /vagrant/modules/drupal/files/drupal/spyc-0.5.zip spyc-0.5/spyc.php; chown www-data:www-data spyc.php",
+        command => "sh -c \"cd /var/www/drupal/sites/all/modules/services/servers/rest_server/lib; unzip -j /vagrant/modules/drupal/files/drupal/spyc-0.5.zip spyc-0.5/spyc.php; chown www-data:www-data spyc.php\"",
         subscribe=>Module["services"],
       }
       exec { "enable modules":

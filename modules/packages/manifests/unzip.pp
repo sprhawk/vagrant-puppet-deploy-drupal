@@ -1,4 +1,4 @@
-class packages:unzip {
+class packages::unzip {
     package {"unzip":
         ensure => present,
     }
