@@ -26,9 +26,17 @@ class drupal::modules {
       module {"entity": name=>"entity-7.x-1.0-rc3.tar.gz"}
       module {"views": name=>"views-7.x-3.3.tar.gz"}
       module {"ctools": name=>"ctools-7.x-1.0.tar.gz"}
+      module {"features": name=>"features-7.x-1.0.tar.gz"}
+      module {"role_export": name=>"role_export-7.x-1.0.tar.gz"}
+      module {"services": name=>"services-7.x-3.1.tar.gz"}
+      exec { "install additional lib for services":
+        path => "/bin:/usr/bin",
+        command => "cd /var/www/drupal/sites/all/modules/services/servers/rest_server/lib; unzip -j /vagrant/modules/drupal/files/drupal/spyc-0.5.zip spyc-0.5/spyc.php; chown www-data:www-data spyc.php",
+        subscribe=>Module["services"],
+      }
       exec { "enable modules":
 	path => "/bin:/usr/bin",
-	command => "drush -r /var/www/drupal -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views",
+	command => "drush -r /var/www/drupal -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth",
       }
       exec { "rebuild permissions":
 	require => Exec["enable modules"],
