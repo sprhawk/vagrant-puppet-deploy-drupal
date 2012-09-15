@@ -30,6 +30,7 @@ class drupal::modules {
       module {"role_export": name=>"role_export-7.x-1.0.tar.gz"}
       module {"services": name=>"services-7.x-3.1.tar.gz"}
       module {"oauth": name=>"oauth-7.x-3.0.tar.gz"}
+      module {"wysiwyg": name=>"wysiwyg-7.x-2.1.tar.gz"}
       exec { "install additional lib for services":
         path => "/bin:/usr/bin",
         command => "sh -c \"cd /var/www/drupal/sites/all/modules/services/servers/rest_server/lib; unzip -j /vagrant/modules/drupal/files/drupal/spyc-0.5.zip spyc-0.5/spyc.php; chown www-data:www-data spyc.php\"",
@@ -37,7 +38,7 @@ class drupal::modules {
       }
       exec { "enable modules":
 	path => "/bin:/usr/bin",
-	command => "drush -r /var/www/drupal -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth",
+	command => "drush -r /var/www/drupal -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth wysiwyg",
       }
       exec { "rebuild permissions":
 	require => Exec["enable modules"],
