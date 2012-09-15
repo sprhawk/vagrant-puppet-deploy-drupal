@@ -33,4 +33,4 @@ for i in $TMP_DIR/drupal*; do
     break
 done
 
-chown -R www-data:www-data $DRUPAL_DIR
+sudo chown -R www-data:www-data $DRUPAL_DIR
