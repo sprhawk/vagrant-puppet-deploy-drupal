@@ -88,9 +88,9 @@ class drupal::modules {
       }
 
       $ckeditor = "ckeditor"
-      $ckeditor_file = "$ckeditor_3.6.4.tar.gz"
+      $ckeditor_file = "ckeditor_3.6.4.tar.gz"
       library { "$ckeditor":
-        require => Module["wysiwg"],
+        require => Module["wysiwyg"],
         file => "$ckeditor_file",
         command => "cd $libraries_install_path; tar xvf $libraries_temp_path/$ckeditor_file; chown -R www-data:www-data $ckeditor;",
       }
