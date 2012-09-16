@@ -9,7 +9,7 @@ class drupal::modules {
       $libraries_source_path = "$drupal_source_path/libs"
       $libraries_temp_path = "$drupal_temp_path"
       $libraries_install_path = "$drupal_site_root_path/sites/all/libraries"
-      define library($file, $lib = $name, $path="/bin:/usr/bin", $command) {
+      define library($file, $path="/bin:/usr/bin", $command) {
       
             $source_path = "$libraries_source_path/$file"
             $temp_path = "$libraries_temp_path/$file"
@@ -21,7 +21,7 @@ class drupal::modules {
                  owner => vagrant,
                  group => vagrant,
             }
-            exec { "install-drupal-library-$lib":
+            exec { "install-drupal-library-$name":
                  path => $path,
                  command => $command,
                  #refreshonly => true,
@@ -32,7 +32,7 @@ class drupal::modules {
       $modules_source_path = "$drupal_source_path/modules"
       $modules_temp_path = "$drupal_temp_path"
       $modules_install_path = "$drupal_site_root_path/sites/all/modules"
-      define module($file, $module = $name) { # should supply a alternative path/command parameter
+      define module($file) { # should supply a alternative path/command parameter
       
             $source_path = "$modules_source_path/$file"
             $temp_path = "$modules_temp_path/$file"
@@ -42,8 +42,8 @@ class drupal::modules {
                  path => $temp_path,
                  source => $source_path,
                  ensure => present,
-                 owner => vagrant,
-                 group => vagrant,
+                 owner => "vagrant",
+                 group => "vagrant",
             }
             exec { "install-drupal-modules-$name": #why $module goes wrong?
                  #require => File[$file],
@@ -67,11 +67,26 @@ class drupal::modules {
       module {"oauth": file=>"oauth-7.x-3.0.tar.gz"}
       module {"wysiwyg": file=>"wysiwyg-7.x-2.1.tar.gz"}
 
-      library { "spyc":
-        file => "spyc-0.5.zip",
-        path => "/bin:/usr/bin",
-        command => "sh -c \"cd $modules_install_path/services/servers/rest_server/lib; unzip -j $libraries_temp_path/spyc-0.5.zip spyc-0.5/spyc.php; chown www-data:www-data spyc.php\"",
+      file {$libraries_install_path:
+        ensure => directory,
+        owner => "www-data",
+        group => "www-data",
+      }
+
+      $spyc="spyc-0.5"
+      library { "$spyc":
+        file => "$spyc.zip",
+        command => "sh -c \"cd $modules_install_path/services/servers/rest_server/lib; unzip -j $libraries_temp_path/$file $spyc/spyc.php; chown www-data:www-data spyc.php\"",
         subscribe=>Module["services"],
+        require => File[$libraries_install_path],
+      }
+      $markitup = "markitup"
+      $markitup_file = "markitup-pack-1.1.13.zip"
+      library { "$markitup":
+        file => $markitup_file, #unzip cannot get $file properly
+        command => "sh -c \"cd $libraries_temp_path; mkdir \\\"$markitup\\\"; unzip $markitup_file -d \\\"$markitup\\\"; mkdir -p $libraries_install_path/; rm -rf $libraries_install_path/markitup; mv -f \\\"$markitup/latest\\\" $libraries_install_path/markitup ; rm -rf \\\"$markitup\\\"; chown -R www-data:www-data $libraries_install_path/markitup;\" ",
+        subscribe => Module["wysiwyg"],
+        require => File[$libraries_install_path],
       }
       exec { "enable modules":
 	path => "/bin:/usr/bin",

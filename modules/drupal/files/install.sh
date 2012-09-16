@@ -7,3 +7,6 @@ chown -R www-data:www-data $DRUPAL_DIR/sites/default/settings.php
 # for example, sites/default/files is created as root, should be changed owner to www-data
 chown -R www-data:www-data $DRUPAL_DIR
 #chmod 666 $DRUPAL_DIR/sites/default/settings.php
+
+# to supress warning message
+sh -c "echo \"\\\$conf['drupal_http_request_fails'] = FALSE;\" >> /var/www/drupal/sites/default/settings.php"
