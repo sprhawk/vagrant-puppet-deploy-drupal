@@ -66,6 +66,12 @@ class drupal::modules {
       module {"services": file=>"services-7.x-3.1.tar.gz"}
       module {"oauth": file=>"oauth-7.x-3.0.tar.gz"}
       module {"wysiwyg": file=>"wysiwyg-7.x-2.1.tar.gz"}
+      #module {"flowplayer": file=>"flowplayer-7.x-1.0-alpha1.tar.gz"}
+      #module {"file_entity": file=>"file_entity-7.x-2.0-unstable6.tar.gz"}
+      module {"media": file=>"media-7.x-1.2.tar.gz"}
+      #module {"plupload": file=>"plupload-7.x-1.0.tar.gz"}
+      module {"libraries": file=>"libraries-7.x-2.0.tar.gz"}
+      module {"mediaelement": file=>"mediaelement-7.x-1.2.tar.gz", require=>Module["libraries"],}
 
       file {$libraries_install_path:
         ensure => directory,
@@ -80,17 +86,25 @@ class drupal::modules {
         subscribe=>Module["services"],
         require => File[$libraries_install_path],
       }
-      $markitup = "markitup"
-      $markitup_file = "markitup-pack-1.1.13.zip"
-      library { "$markitup":
-        file => $markitup_file, #unzip cannot get $file properly
-        command => "sh -c \"cd $libraries_temp_path; mkdir \\\"$markitup\\\"; unzip $markitup_file -d \\\"$markitup\\\"; mkdir -p $libraries_install_path/; rm -rf $libraries_install_path/markitup; mv -f \\\"$markitup/latest\\\" $libraries_install_path/markitup ; rm -rf \\\"$markitup\\\"; chown -R www-data:www-data $libraries_install_path/markitup;\" ",
-        subscribe => Module["wysiwyg"],
-        require => File[$libraries_install_path],
+
+      $ckeditor = "ckeditor"
+      $ckeditor_file = "$ckeditor_3.6.4.tar.gz"
+      library { "$ckeditor":
+        require => Module["wysiwg"],
+        file => "$ckeditor_file",
+        command => "cd $libraries_install_path; tar xvf $libraries_temp_path/$ckeditor_file; chown -R www-data:www-data $ckeditor;",
       }
+      #$markitup = "markitup"
+      #$markitup_file = "markitup-pack-1.1.13.zip"
+      #library { "$markitup":
+      #  file => $markitup_file, #unzip cannot get $file properly
+      #  command => "sh -c \"cd $libraries_temp_path; mkdir \\\"$markitup\\\"; unzip $markitup_file -d \\\"$markitup\\\"; mkdir -p $libraries_install_path/; rm -rf $libraries_install_path/markitup; mv -f \\\"$markitup/latest\\\" $libraries_install_path/markitup ; rm -rf \\\"$markitup\\\"; chown -R www-data:www-data $libraries_install_path/markitup;\" ",
+      #  subscribe => Module["wysiwyg"],
+      #  require => File[$libraries_install_path],
+      #}
       exec { "enable modules":
 	path => "/bin:/usr/bin",
-	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth wysiwyg",
+	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui wysiwyg file_entity media media_internet libraries mediaelement",
       }
       exec { "rebuild permissions":
 	require => Exec["enable modules"],
