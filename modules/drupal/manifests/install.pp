@@ -19,7 +19,7 @@ class drupal::install {
       exec { "install": 
            require =>  File['drupal-install-sh'],
            path => "/bin:/usr/bin:/usr/sbin",
-           command => "sudo sh /var/tmp/install.sh",
+           command => "sh /var/tmp/install.sh",
            refreshonly => true,
            subscribe => File["drupal-install-sh"],
       }

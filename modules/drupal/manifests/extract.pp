@@ -20,7 +20,7 @@ class drupal::extract{
       exec { "extract": 
            require => [File['drupal-tarball'], File['drupal-extract-sh']],
            path => "/bin:/usr/bin:/usr/sbin",
-           command => "sudo sh /var/tmp/extract.sh /var/tmp/$drupal_tarball",
+           command => "sh /var/tmp/extract.sh /var/tmp/$drupal_tarball",
            refreshonly => true,
            subscribe => [File["drupal-extract-sh"], File["drupal-tarball"]],
       }

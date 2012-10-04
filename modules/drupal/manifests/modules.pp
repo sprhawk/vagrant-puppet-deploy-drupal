@@ -48,7 +48,7 @@ class drupal::modules {
             exec { "install-drupal-modules-$name": #why $module goes wrong?
                  #require => File[$file],
                  path => "/bin:/usr/bin",
-                 command => "/bin/sh -c 'cd $modules_install_path; sudo tar xvf $temp_path; sudo chown -R www-data:www-data $name; chmod ug+w -R $name'",
+                 command => "sh -c \"cd $modules_install_path; tar xvf $temp_path; chown -R www-data:www-data $name; chmod ug+w -R $name\"",
                  #refreshonly => true,
                  subscribe => File[$file],
             }
@@ -69,9 +69,16 @@ class drupal::modules {
       #module {"flowplayer": file=>"flowplayer-7.x-1.0-alpha1.tar.gz"}
       #module {"file_entity": file=>"file_entity-7.x-2.0-unstable6.tar.gz"}
       module {"media": file=>"media-7.x-1.2.tar.gz"}
+      module {"media_derivatives": file=>"media_derivatives-7.x-1.x-dev.tar.gz"}
+
+      module {"media_ffmpeg_simple": file=>"media_ffmpeg_simple-7.x-1.0-beta2.tar.gz", require => [Module["media_derivatives"], Class['Packages::ffmpeg']] }
       #module {"plupload": file=>"plupload-7.x-1.0.tar.gz"}
       module {"libraries": file=>"libraries-7.x-2.0.tar.gz"}
-      module {"mediaelement": file=>"mediaelement-7.x-1.2.tar.gz", require=>Module["libraries"],}
+      #module {"mediaelement": file=>"mediaelement-7.x-1.2.tar.gz", require=>Module["libraries"],}
+      module {"mediafront": file=>"mediafront-7.x-2.0-rc2.tar.gz"}
+      module {"og_subgroups": file=>"og_subgroups-7.x-1.x-dev.tar.gz"} 
+      module {"token": file=>"token-7.x-1.4.tar.gz"}
+      module {"pathauto": file=>"pathauto-7.x-1.2.tar.gz", require=>Module["token"]}
 
       file {$libraries_install_path:
         ensure => directory,
@@ -80,9 +87,10 @@ class drupal::modules {
       }
 
       $spyc="spyc-0.5"
+      $spyc_file="$spyc.zip"
       library { "$spyc":
-        file => "$spyc.zip",
-        command => "sh -c \"cd $modules_install_path/services/servers/rest_server/lib; unzip -j $libraries_temp_path/$file $spyc/spyc.php; chown www-data:www-data spyc.php\"",
+        file => $spyc_file,
+        command => "sh -c \"cd $modules_install_path/services/servers/rest_server/lib; unzip -j $libraries_temp_path/$spyc_file $spyc/spyc.php; chown www-data:www-data spyc.php\"",
         subscribe=>Module["services"],
         require => File[$libraries_install_path],
       }
@@ -92,7 +100,7 @@ class drupal::modules {
       library { "$ckeditor":
         require => Module["wysiwyg"],
         file => "$ckeditor_file",
-        command => "cd $libraries_install_path; tar xvf $libraries_temp_path/$ckeditor_file; chown -R www-data:www-data $ckeditor;",
+        command => "sh -c \"cd $libraries_install_path; tar xvf $libraries_temp_path/$ckeditor_file; chown -R www-data:www-data $ckeditor;\"",
       }
       #$markitup = "markitup"
       #$markitup_file = "markitup-pack-1.1.13.zip"
@@ -104,7 +112,7 @@ class drupal::modules {
       #}
       exec { "enable modules":
 	path => "/bin:/usr/bin",
-	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui wysiwyg file_entity media media_internet libraries mediaelement",
+	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui wysiwyg file_entity media media_internet libraries mediafront osmplayer media_derivatives media_derivatives_ui media_ffmpeg_simple og_subgroups token pathauto",
       }
       exec { "rebuild permissions":
 	require => Exec["enable modules"],
