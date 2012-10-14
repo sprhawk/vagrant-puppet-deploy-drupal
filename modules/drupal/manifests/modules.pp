@@ -4,6 +4,7 @@ class drupal::modules {
 
       $drupal_source_path = "puppet:///modules/drupal/drupal"
       $drupal_temp_path = "/var/tmp"
+      #$drupal_site_root_path = "/vagrant/drupal"
       $drupal_site_root_path = "/var/www/drupal"
       
       $libraries_source_path = "$drupal_source_path/libs"
@@ -65,6 +66,7 @@ class drupal::modules {
       module {"role_export": file=>"role_export-7.x-1.0.tar.gz"}
       module {"services": file=>"services-7.x-3.1.tar.gz"}
       module {"oauth": file=>"oauth-7.x-3.0.tar.gz"}
+      module {"services_views": file=>"services_views-7.x-1.0-beta2.tar.gz", require=>Module["services"]}
       module {"wysiwyg": file=>"wysiwyg-7.x-2.1.tar.gz"}
       #module {"flowplayer": file=>"flowplayer-7.x-1.0-alpha1.tar.gz"}
       #module {"file_entity": file=>"file_entity-7.x-2.0-unstable6.tar.gz"}
@@ -112,7 +114,7 @@ class drupal::modules {
       #}
       exec { "enable modules":
 	path => "/bin:/usr/bin",
-	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui wysiwyg file_entity media media_internet libraries mediafront osmplayer media_derivatives media_derivatives_ui media_ffmpeg_simple og_subgroups token pathauto",
+	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui services_views wysiwyg file_entity media media_internet libraries mediafront osmplayer media_derivatives media_derivatives_ui media_ffmpeg_simple og_subgroups token pathauto",
       }
       exec { "rebuild permissions":
 	require => Exec["enable modules"],

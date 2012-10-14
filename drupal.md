@@ -6,8 +6,11 @@ Drupal -- apple rock school setup
   2. 班级
   3. 教学内容
   4. 学习笔记
-  
-2. change URL aliases patterns
+2. add new roles to drupal/people and og
+3. 增加
+4. 修改URL别名
+5. 增加测试用数据
+
 3. add content for groups
 
 
