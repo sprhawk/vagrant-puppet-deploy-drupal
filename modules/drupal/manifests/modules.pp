@@ -55,7 +55,6 @@ class drupal::modules {
             }
       }
       require drupal::install
-      Module {before => Exec["enable modules"]}
       module {"og": file=>"og-7.x-1.4.tar.gz"}
       module {"og_views": file=>"og_views-7.x-1.0.tar.gz"}
       module {"panels": file=>"panels-7.x-3.2.tar.gz"}
@@ -112,6 +111,7 @@ class drupal::modules {
       #  subscribe => Module["wysiwyg"],
       #  require => File[$libraries_install_path],
       #}
+      Module {before => Exec["enable modules"]}
       exec { "enable modules":
 	path => "/bin:/usr/bin",
 	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui services_views wysiwyg file_entity media media_internet libraries mediafront osmplayer media_derivatives media_derivatives_ui media_ffmpeg_simple og_subgroups token pathauto",

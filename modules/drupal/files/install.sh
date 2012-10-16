@@ -1,5 +1,5 @@
 #!/bin/bash
-set -nounset
+set -o nounset
 
 #DRUPAL_DIR=/vagrant/drupal
 DRUPAL_DIR=/var/www/drupal
