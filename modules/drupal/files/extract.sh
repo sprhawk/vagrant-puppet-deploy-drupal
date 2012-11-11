@@ -15,13 +15,11 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
-if [ -d $DRUPAL_DIR ]
-    then
+if [ -d $DRUPAL_DIR ]; then
     rm -rf $DRUPAL_DIR
 fi
 
-if [ ! -d $TMP_DIR ]
-    then
+if [ ! -d $TMP_DIR ]; then
     mkdir -p $TMP_DIR
 fi
 
