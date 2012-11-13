@@ -1,5 +1,5 @@
 class drupal::extract{
-      $drupal_tarball = 'drupal-7.15.tar.gz'
+      $drupal_tarball = 'drupal-7.17.tar.gz'
       file { "drupal-tarball":
            path => "/var/tmp/$drupal_tarball",
            source => "puppet:///modules/drupal/drupal/$drupal_tarball",
@@ -18,6 +18,8 @@ class drupal::extract{
       }
 
       exec { "extract": 
+           #creates => "/var/www/drupal",
+           creates => "/home/vagrant/drupal",
            require => [File['drupal-tarball'], File['drupal-extract-sh']],
            path => "/bin:/usr/bin:/usr/sbin",
            command => "sh /var/tmp/extract.sh /var/tmp/$drupal_tarball",

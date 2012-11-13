@@ -1,7 +1,8 @@
 class drupal {
-      include drupal::extract
-      include drupal::drupal_conf
-      include drupal::db
-      include drupal::install
-      include drupal::modules
+      class {"drupal::extract":,}
+
+      class {"drupal::drupal_conf":, }
+      class {"drupal::db":, }
+      class {"drupal::install":, }
+      class {"drupal::modules":, }
 }

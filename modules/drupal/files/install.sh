@@ -1,8 +1,8 @@
 #!/bin/bash
 set -o nounset
 
-#DRUPAL_DIR=/vagrant/drupal
-DRUPAL_DIR=/var/www/drupal
+DRUPAL_DIR=/home/vagrant/drupal
+#DRUPAL_DIR=/var/www/drupal
  
 drush site-install --db-url=mysql://drupal:drupal@localhost/drupal --root=$DRUPAL_DIR --account-name=admin --account-pass=admin --account-mail="admin@nobody.me" --site-name="Nobody" --site-mail="admin@nobody.me" --yes
 chown -R www-data:www-data $DRUPAL_DIR/sites/default/settings.php

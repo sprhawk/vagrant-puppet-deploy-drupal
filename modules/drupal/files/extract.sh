@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DRUPAL_DIR=/var/www/drupal
-#DRUPAL_DIR=/vagrant/drupal
+DRUPAL_DIR=/home/vagrant/drupal
 TMP_DIR=/var/tmp/drupal
 
 #if [[ -z $1 ]]; then
