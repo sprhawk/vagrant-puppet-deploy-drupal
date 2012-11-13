@@ -10,7 +10,7 @@ class drupal::modules {
       $libraries_source_path = "$drupal_source_path/libs"
       $libraries_temp_path = "$drupal_temp_path"
       $libraries_install_path = "$drupal_site_root_path/sites/all/libraries"
-      define library($file, $path="/bin:/usr/bin", $command) {
+      define library($file, $path="/bin:/usr/bin", $command, $creates="") {
       
             $source_path = "$libraries_source_path/$file"
             $temp_path = "$libraries_temp_path/$file"
@@ -22,11 +22,22 @@ class drupal::modules {
                  owner => vagrant,
                  group => vagrant,
             }
-            exec { "install-drupal-library-$name":
-                 path => $path,
-                 command => $command,
-                 #refreshonly => true,
-                 subscribe => File[$file],
+            if $creates != "" {
+                    exec { "install-drupal-library-$name":
+                         path => $path,
+                         command => $command,
+                         #refreshonly => true,
+                         subscribe => File[$file],
+                         creates => $creates,
+                    }
+            }
+            else {
+                    exec { "install-drupal-library-$name":
+                         path => $path,
+                         command => $command,
+                         #refreshonly => true,
+                         subscribe => File[$file],
+                    }
             }
       }
       
@@ -52,6 +63,9 @@ class drupal::modules {
                  command => "sh -c \"cd $modules_install_path; tar xvf $temp_path; chown -R www-data:www-data $name; chmod ug+w -R $name\"",
                  #refreshonly => true,
                  subscribe => File[$file],
+                 notify => Exec["enable modules"],
+                 before => Exec["enable modules"],
+                 creates => "$modules_install_path/$name",
             }
       }
       require drupal::install
@@ -78,7 +92,7 @@ class drupal::modules {
       module {"libraries": file=>"libraries-7.x-2.0.tar.gz"}
       #module {"mediaelement": file=>"mediaelement-7.x-1.2.tar.gz", require=>Module["libraries"],}
       module {"mediafront": file=>"mediafront-7.x-2.0-rc3.tar.gz"}
-      module {"og_subgroups": file=>"og_subgroups-7.x-1.x-dev.tar.gz"} 
+      #module {"og_subgroups": file=>"og_subgroups-7.x-1.x-dev.tar.gz"} 
       module {"token": file=>"token-7.x-1.4.tar.gz"}
       module {"pathauto": file=>"pathauto-7.x-1.2.tar.gz", require=>Module["token"]}
 
@@ -95,6 +109,7 @@ class drupal::modules {
         command => "sh -c \"cd $modules_install_path/services/servers/rest_server/lib; unzip -j $libraries_temp_path/$spyc_file $spyc/spyc.php; chown www-data:www-data spyc.php\"",
         subscribe=>Module["services"],
         require => File[$libraries_install_path],
+        creates => "$modules_install_path/services/servers/rest_server/lib/spyc.php",
       }
 
       $ckeditor = "ckeditor"
@@ -103,6 +118,7 @@ class drupal::modules {
         require => Module["wysiwyg"],
         file => "$ckeditor_file",
         command => "sh -c \"cd $libraries_install_path; tar xvf $libraries_temp_path/$ckeditor_file; chown -R www-data:www-data $ckeditor;\"",
+        creates => "$libraries_install_path/$ckeditor",
       }
       #$markitup = "markitup"
       #$markitup_file = "markitup-pack-1.1.13.zip"
@@ -114,8 +130,8 @@ class drupal::modules {
       #}
       exec { "enable modules":
 	path => "/bin:/usr/bin",
-	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui services_views wysiwyg file_entity media media_internet libraries mediafront osmplayer media_derivatives media_derivatives_ui media_ffmpeg_simple og_subgroups token pathauto",
-      }
+	command => "drush -r $drupal_site_root_path -y pm-enable ctools entity views views_ui panels panels_node page_manager views_content panels_ipe panels_mini og og_access og_context og_field_access og_ui og_views features role_export services rest_server services_oauth oauth_common oauth_common_providerui services_views wysiwyg file_entity media media_internet libraries mediafront osmplayer media_derivatives media_derivatives_ui media_ffmpeg_simple token pathauto",
+      } ~>
       exec { "rebuild permissions":
 	require => Exec["enable modules"],
 	path => "/bin:/usr/bin",

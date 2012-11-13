@@ -1,6 +1,5 @@
 class drupal::drupal_conf {
     require apache2
-    require drupal::extract
 
     $apache2_conf_dir = "/etc/apache2"
     file { "drupal.conf" :
